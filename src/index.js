@@ -1,7 +1,8 @@
-// write your code here
 // src/index.js
 document.addEventListener('DOMContentLoaded', () => {
     fetchImageData();
+    const likeButton = document.getElementById('like-button');
+    likeButton.addEventListener('click', likeImage);
     const commentForm = document.getElementById('comment-form');
     commentForm.addEventListener('submit', addComment);
   });
@@ -16,35 +17,35 @@ document.addEventListener('DOMContentLoaded', () => {
   }
   
   function displayImage(imageData) {
-    const imageContainer = document.getElementById('image-container');
-    imageContainer.innerHTML = `
-      <img src="${imageData.image}" alt="${imageData.title}">
-      <h2 id="card-title">${imageData.title}</h2>
-      <p>Likes: ${imageData.likes}</p>
-      <button id="like-btn">Like</button>
-    `;
-    const likeButton = document.getElementById('like-btn');
-    likeButton.addEventListener('click', () => likeImage(imageData.id));
-  
+    const titleElement = document.getElementById('card-title');
+    const imageElement = document.getElementById('card-image');
+    const likeCountElement = document.getElementById('like-count');
     const commentList = document.getElementById('comments-list');
+  
+    titleElement.textContent = imageData.title;
+    imageElement.src = imageData.image;
+    imageElement.alt = imageData.title;
+    likeCountElement.textContent = `${imageData.likes} likes`;
+  
     commentList.innerHTML = '';
     imageData.comments.forEach(comment => {
       const li = document.createElement('li');
       li.textContent = comment.content;
+      li.dataset.commentId = comment.id; // Add data attribute to track comment id
       li.addEventListener('click', () => removeComment(comment.id));
       commentList.appendChild(li);
     });
   }
   
-  function likeImage(imageId) {
-    const likesElement = document.querySelector('#image-container p');
-    const currentLikes = parseInt(likesElement.textContent.split(':')[1].trim());
-    likesElement.textContent = `Likes: ${currentLikes + 1}`;
+  function likeImage() {
+    const likeCountElement = document.getElementById('like-count');
+    const currentLikes = parseInt(likeCountElement.textContent.split(' ')[0]);
+    likeCountElement.textContent = `${currentLikes + 1} likes`;
   }
   
   function addComment(event) {
     event.preventDefault();
-    const commentInput = document.getElementById('comment-input');
+    const commentInput = document.getElementById('comment');
     const content = commentInput.value;
     const commentList = document.getElementById('comments-list');
     const li = document.createElement('li');
